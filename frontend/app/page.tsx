@@ -9,6 +9,16 @@ type Plan = { routes: VehicleRoute[]; totalDistance: number; priorityPenalty: nu
 type RankedGenome = { genome: string[]; plan: Plan };
 type Snapshot = { generation: number; best: number; average: number; plan: Plan };
 type Config = { population: number; generations: number; mutation: number; seed: number };
+type HistoryEntry = {
+  executedAt: string;
+  configuration: Config;
+  fitness: number;
+  totalDistanceKm: number;
+  priorityPenalty: number;
+  capacityUtilizationPercent: number;
+  estimatedCompletionMinutes: number;
+  timeSavedVsBaselineMinutes: number;
+};
 
 const DEPOT = { name: "Hospital Central", x: 0, y: 0 };
 const DELIVERIES: Delivery[] = [
@@ -30,6 +40,9 @@ const VEHICLES: Vehicle[] = [
 ];
 const ROUTE_COLORS = ["#e8583e", "#168f82", "#5c55cf"];
 const DEFAULT_CONFIG: Config = { population: 50, generations: 80, mutation: 0.25, seed: 42 };
+const AVERAGE_SPEED_KMH = 30;
+const SERVICE_TIME_MINUTES = 8;
+const HISTORY_KEY = "rota-gen-history";
 
 function createRandom(seed: number) {
   let value = seed >>> 0;
@@ -58,6 +71,33 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }) {
 function routeDistance(items: Delivery[]) {
   const points = [DEPOT, ...items, DEPOT];
   return points.slice(0, -1).reduce((sum, point, index) => sum + distance(point, points[index + 1]), 0);
+}
+
+function estimatedRouteTime(route: VehicleRoute) {
+  return route.distance / AVERAGE_SPEED_KMH * 60 + route.deliveries.length * SERVICE_TIME_MINUTES;
+}
+
+function estimatedCompletionTime(plan: Plan) {
+  return Math.max(0, ...plan.routes.map(estimatedRouteTime));
+}
+
+function capacityUtilization(plan: Plan) {
+  const load = plan.routes.reduce((sum, route) => sum + route.load, 0);
+  const capacity = plan.routes.reduce((sum, route) => sum + route.vehicle.capacity, 0);
+  return capacity ? load / capacity * 100 : 0;
+}
+
+function historyEntry(plan: Plan, baseline: Plan, configuration: Config): HistoryEntry {
+  return {
+    executedAt: new Date().toISOString(),
+    configuration: { ...configuration },
+    fitness: Number(plan.fitness.toFixed(2)),
+    totalDistanceKm: Number(plan.totalDistance.toFixed(2)),
+    priorityPenalty: Number(plan.priorityPenalty.toFixed(2)),
+    capacityUtilizationPercent: Number(capacityUtilization(plan).toFixed(2)),
+    estimatedCompletionMinutes: Number(estimatedCompletionTime(plan).toFixed(2)),
+    timeSavedVsBaselineMinutes: Number((estimatedCompletionTime(baseline) - estimatedCompletionTime(plan)).toFixed(2)),
+  };
 }
 
 function decode(genome: string[]): Plan {
@@ -272,14 +312,31 @@ export default function Home() {
   const [reportMode, setReportMode] = useState("");
   const [loadingReport, setLoadingReport] = useState(false);
   const [question, setQuestion] = useState("");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const active = snapshots[current];
   const baseline = useMemo(() => decode(nearestNeighbor()), []);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(HISTORY_KEY) || "[]");
+      if (Array.isArray(stored)) setHistory(stored.slice(-30));
+    } catch {
+      window.localStorage.removeItem(HISTORY_KEY);
+    }
+  }, []);
+
+  function saveHistory(entries: HistoryEntry[]) {
+    const limited = entries.slice(-30);
+    setHistory(limited);
+    window.localStorage.setItem(HISTORY_KEY, JSON.stringify(limited));
+  }
 
   function execute() {
     const result = runGenetic(config);
     setSnapshots(result);
     setCurrent(result.length - 1);
     setReport("");
+    saveHistory([...history, historyEntry(result[result.length - 1].plan, baseline, config)]);
   }
 
   async function requestAnalysis(questionText = "") {
@@ -289,7 +346,19 @@ export default function Home() {
       const response = await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: active.plan, generation: active.generation, baseline, question: questionText || undefined }),
+        body: JSON.stringify({
+          plan: active.plan,
+          generation: active.generation,
+          baseline,
+          timeAssumptions: { averageSpeedKmh: AVERAGE_SPEED_KMH, serviceTimeMinutes: SERVICE_TIME_MINUTES },
+          timeComparison: {
+            baselineCompletionMinutes: estimatedCompletionTime(baseline),
+            optimizedCompletionMinutes: estimatedCompletionTime(active.plan),
+            timeSavedMinutes: estimatedCompletionTime(baseline) - estimatedCompletionTime(active.plan),
+          },
+          history,
+          question: questionText || undefined,
+        }),
       });
       if (!response.ok) throw new Error();
       const data = await response.json();
@@ -305,6 +374,8 @@ export default function Home() {
   }
 
   const improvement = ((baseline.fitness - active.plan.fitness) / baseline.fitness) * 100;
+  const completionMinutes = estimatedCompletionTime(active.plan);
+  const timeSavedMinutes = estimatedCompletionTime(baseline) - completionMinutes;
 
   return <main>
     <header className="header">
@@ -343,6 +414,8 @@ export default function Home() {
           <div><span>Fitness</span><strong>{format(active.plan.fitness)}</strong></div>
           <div><span>Prioridade</span><strong>{format(active.plan.priorityPenalty, 0)}</strong></div>
           <div><span>Melhoria</span><strong>{format(improvement)}%</strong></div>
+          <div><span>Conclusão estimada</span><strong>{format(completionMinutes)} min</strong></div>
+          <div><span>Economia de tempo</span><strong>{timeSavedMinutes >= 0 ? "+" : ""}{format(timeSavedMinutes)} min</strong><small>vs. vizinho mais próximo</small></div>
         </div>
 
         <div className="routes">
@@ -366,7 +439,7 @@ export default function Home() {
     </section>
 
     <section className="report" id="relatorio">
-      <div><small>Relatório operacional</small><h2>Consulte a rota em linguagem natural</h2><p>Gere o relatório diário ou faça uma pergunta objetiva sobre entregas, prioridades e veículos.</p><button onClick={() => requestAnalysis()} disabled={loadingReport}>{loadingReport ? "Processando..." : "Gerar relatório diário"}</button><div className="question-form"><label htmlFor="route-question">Pergunta sobre a rota</label><textarea id="route-question" maxLength={500} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ex.: Qual entrega crítica deve sair primeiro?" /><button onClick={() => requestAnalysis(question.trim())} disabled={loadingReport || !question.trim()}>Enviar pergunta</button></div></div>
+      <div><small>Relatório operacional</small><h2>Consulte a rota em linguagem natural</h2><p>Gere o relatório diário ou faça uma pergunta objetiva sobre entregas, prioridades e veículos.</p><div className="history-summary"><span>Histórico local: <strong>{history.length}/30 execuções</strong></span>{history.length > 0 && <button onClick={() => saveHistory([])}>Limpar</button>}</div><button onClick={() => requestAnalysis()} disabled={loadingReport}>{loadingReport ? "Processando..." : "Gerar relatório diário"}</button><div className="question-form"><label htmlFor="route-question">Pergunta sobre a rota</label><textarea id="route-question" maxLength={500} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ex.: Qual padrão aparece nas últimas execuções?" /><button onClick={() => requestAnalysis(question.trim())} disabled={loadingReport || !question.trim()}>Enviar pergunta</button></div></div>
       <div className="report-box"><b>{reportMode || "Resultado"}</b>{report ? <MarkdownReport text={report} /> : <p>O relatório aparecerá aqui após clicar no botão.</p>}</div>
     </section>
 

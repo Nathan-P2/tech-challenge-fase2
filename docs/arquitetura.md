@@ -15,6 +15,8 @@ flowchart LR
     G --> B
     G --> H[Melhor plano]
     H --> I[Mapa e métricas]
+    I --> M[Histórico local de execuções]
+    M --> J
     H --> J[Prompt estruturado]
     J --> K[OpenRouter]
     K --> L[Relatório ou resposta]
@@ -32,6 +34,7 @@ flowchart LR
 | `cli.py` | Executa o fluxo completo e salva os artefatos em `output/`. |
 | `frontend/app/page.tsx` | Executa a simulação visual e apresenta os resultados. |
 | `frontend/app/api/report/route.ts` | Mantém a chave no servidor e intermedeia chamadas à OpenRouter. |
+| `localStorage` / `run_history.json` | Mantêm até 30 execuções para comparação de padrões. |
 
 ## Fluxo do algoritmo
 
@@ -58,7 +61,19 @@ As penalidades altas tornam planos inviáveis muito menos competitivos. A priori
 
 ## Integração com LLM
 
-O navegador envia o plano para `POST /api/report`. O endpoint monta um prompt com rotas, cargas, distâncias, prioridades, baseline e pergunta opcional. A chave `OPENROUTER_API_KEY` permanece no servidor. A resposta em Markdown é renderizada pelo frontend sem injeção de HTML.
+O navegador envia o plano para `POST /api/report`. O endpoint monta um prompt com rotas, cargas, distâncias, prioridades, baseline, estimativa de tempo, até 30 execuções anteriores e pergunta opcional. A chave `OPENROUTER_API_KEY` permanece no servidor. A resposta em Markdown é renderizada pelo frontend sem injeção de HTML.
+
+## Tempo e padrões
+
+O tempo de cada rota soma deslocamento e atendimento:
+
+```text
+tempo_rota = distância / 30 km/h + 8 minutos × número de entregas
+tempo_da_operação = maior tempo entre os veículos
+economia = tempo_baseline - tempo_otimizado
+```
+
+Como os veículos operam em paralelo, o maior tempo de rota representa a conclusão estimada da operação. Um resultado negativo em `economia` indica tempo adicional. O histórico contém configuração, fitness, distância, prioridade, capacidade, tempo e economia. A LLM compara essas métricas para identificar tendências recorrentes.
 
 ## Decisões de implementação
 
@@ -67,4 +82,5 @@ O navegador envia o plano para `POST /api/report`. O endpoint monta um prompt co
 - Execução local: nuvem e infraestrutura como código estão fora do escopo escolhido.
 - Semente configurável: permite repetir resultados e comparações.
 - Vizinho mais próximo: fornece uma referência simples para avaliar o algoritmo genético.
-- Relatório diário: distância e ocupação da capacidade são indicadores de recursos; tempo não é estimado sem dados de duração.
+- Relatório diário: distância, capacidade e tempo estimado são comparados com o baseline.
+- Histórico limitado: somente as 30 execuções mais recentes são analisadas.

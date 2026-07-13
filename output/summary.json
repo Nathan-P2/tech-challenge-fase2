@@ -15,6 +15,10 @@
     "total_load": 30,
     "total_vehicle_capacity": 36,
     "capacity_utilization_percent": 83.33,
+    "estimated_time": {
+      "total_vehicle_minutes": 238.67,
+      "operation_completion_minutes": 88.23
+    },
     "routes": [
       {
         "vehicle": "V1",
@@ -22,6 +26,7 @@
         "max_distance_km": 30,
         "load": 9,
         "distance_km": 26.56,
+        "estimated_time_minutes": 77.12,
         "deliveries": [
           {
             "id": "U08",
@@ -49,6 +54,7 @@
         "max_distance_km": 30,
         "load": 11,
         "distance_km": 28.12,
+        "estimated_time_minutes": 88.23,
         "deliveries": [
           {
             "id": "U04",
@@ -82,6 +88,7 @@
         "max_distance_km": 30,
         "load": 10,
         "distance_km": 24.66,
+        "estimated_time_minutes": 73.31,
         "deliveries": [
           {
             "id": "U05",
@@ -115,6 +122,10 @@
     "total_load": 30,
     "total_vehicle_capacity": 36,
     "capacity_utilization_percent": 83.33,
+    "estimated_time": {
+      "total_vehicle_minutes": 237.83,
+      "operation_completion_minutes": 81.6
+    },
     "routes": [
       {
         "vehicle": "V1",
@@ -122,6 +133,7 @@
         "max_distance_km": 30,
         "load": 12,
         "distance_km": 24.8,
+        "estimated_time_minutes": 81.6,
         "deliveries": [
           {
             "id": "U10",
@@ -155,6 +167,7 @@
         "max_distance_km": 30,
         "load": 9,
         "distance_km": 27.5,
+        "estimated_time_minutes": 79.0,
         "deliveries": [
           {
             "id": "U07",
@@ -182,6 +195,7 @@
         "max_distance_km": 30,
         "load": 9,
         "distance_km": 26.62,
+        "estimated_time_minutes": 77.24,
         "deliveries": [
           {
             "id": "U09",
@@ -460,5 +474,17 @@
     379.33,
     379.33,
     379.33
-  ]
+  ],
+  "time_assumptions": {
+    "average_speed_kmh": 30.0,
+    "service_time_minutes_per_delivery": 8.0
+  },
+  "time_comparison": {
+    "baseline_completion_minutes": 81.6,
+    "optimized_completion_minutes": 88.23,
+    "time_saved_minutes": -6.63,
+    "baseline_total_vehicle_minutes": 237.83,
+    "optimized_total_vehicle_minutes": 238.67
+  },
+  "history_entries_analyzed": 3
 }

@@ -9,6 +9,7 @@ from hospital_routes.reporting import (
     generate_llm_text,
     local_report,
     plan_as_dict,
+    time_comparison,
 )
 from hospital_routes.visualization import render_svg
 
@@ -35,19 +36,29 @@ class OutputTest(unittest.TestCase):
         self.assertIn("Qual entrega e critica?", prompt)
         self.assertIn('"routes"', prompt)
         self.assertIn("Prioridade 3", prompt)
+        self.assertIn('"time_comparison"', prompt)
+        self.assertIn('"execution_history"', prompt)
 
     def test_local_report_contains_vehicle_instructions(self) -> None:
         report = local_report(self.plan, self.baseline)
         self.assertIn("V1", report)
         self.assertIn("Hospital Central", report)
         self.assertIn("Ocupacao da capacidade total", report)
-        self.assertIn("Tempo economizado: nao calculado", report)
+        self.assertIn("Economia estimada de tempo", report)
+        self.assertIn("Premissas de tempo", report)
 
     def test_summary_contains_resource_utilization(self) -> None:
         data = plan_as_dict(self.plan)
         self.assertIn("capacity_utilization_percent", data)
         self.assertGreater(data["capacity_utilization_percent"], 0)
         self.assertLessEqual(data["capacity_utilization_percent"], 100)
+        self.assertIn("estimated_time", data)
+
+    def test_time_comparison_uses_explicit_assumptions(self) -> None:
+        comparison = time_comparison(self.plan, self.baseline)
+        self.assertIn("time_saved_minutes", comparison)
+        self.assertGreater(comparison["baseline_completion_minutes"], 0)
+        self.assertGreater(comparison["optimized_completion_minutes"], 0)
 
     def test_svg_contains_route_map(self) -> None:
         svg = render_svg(self.depot, self.plan)

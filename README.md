@@ -13,6 +13,8 @@ O algoritmo foi adaptado do projeto [sergiopolimante/genetic_algorithm_tsp](http
 - Mapa SVG e frontend interativo;
 - Relatório diário via OpenRouter;
 - Perguntas em linguagem natural pelo terminal e frontend;
+- Estimativa e comparação de tempo operacional;
+- Histórico de até 30 execuções para identificar padrões;
 - Métricas de distância, prioridade e ocupação da capacidade;
 - Testes automatizados.
 
@@ -37,6 +39,7 @@ A execução cria em `output/`:
 - `summary.json`: métricas, comparação e sequência das entregas;
 - `llm_prompt.txt`: prompt reproduzível;
 - `report.txt`: instruções e resumo operacional.
+- `run_history.json`: histórico compacto usado na análise de padrões.
 
 ## OpenRouter no terminal
 
@@ -59,7 +62,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Acesse `http://localhost:3000`. O frontend permite configurar o algoritmo, visualizar a geração selecionada, analisar a divisão entre veículos, gerar o relatório diário e fazer perguntas sobre a rota.
+Acesse `http://localhost:3000`. O frontend permite configurar o algoritmo, visualizar a geração selecionada, analisar a divisão entre veículos, comparar o tempo estimado, gerar o relatório diário e fazer perguntas sobre a rota. As últimas 30 execuções ficam no navegador e permitem que a LLM identifique tendências.
 
 ## Testes
 
@@ -84,4 +87,4 @@ npm test
 
 ## Escopo
 
-O projeto é executado localmente e não utiliza nuvem. Infraestrutura como código não se aplica ao escopo escolhido. As coordenadas e distâncias são fictícias e euclidianas; não há geocodificação, trânsito ou cálculo de duração.
+O projeto é executado localmente e não utiliza nuvem. Infraestrutura como código não se aplica ao escopo escolhido. As coordenadas e distâncias são fictícias e euclidianas. O tempo é uma estimativa baseada em velocidade média de 30 km/h e 8 minutos de atendimento por entrega; não representa trânsito real.

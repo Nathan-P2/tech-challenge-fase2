@@ -1,0 +1,47 @@
+[
+  {
+    "executed_at": "2026-07-13T18:36:09.585528+00:00",
+    "configuration": {
+      "population": 80,
+      "generations": 120,
+      "mutation_probability": 0.2,
+      "seed": 7
+    },
+    "fitness": 379.33,
+    "total_distance_km": 79.33,
+    "priority_penalty": 75.0,
+    "capacity_utilization_percent": 83.33,
+    "estimated_completion_minutes": 88.23,
+    "time_saved_vs_baseline_minutes": -6.63
+  },
+  {
+    "executed_at": "2026-07-13T18:36:10.030137+00:00",
+    "configuration": {
+      "population": 100,
+      "generations": 180,
+      "mutation_probability": 0.35,
+      "seed": 19
+    },
+    "fitness": 379.33,
+    "total_distance_km": 79.33,
+    "priority_penalty": 75.0,
+    "capacity_utilization_percent": 83.33,
+    "estimated_completion_minutes": 88.23,
+    "time_saved_vs_baseline_minutes": -6.63
+  },
+  {
+    "executed_at": "2026-07-13T18:36:10.666847+00:00",
+    "configuration": {
+      "population": 120,
+      "generations": 250,
+      "mutation_probability": 0.25,
+      "seed": 42
+    },
+    "fitness": 379.33,
+    "total_distance_km": 79.33,
+    "priority_penalty": 75.0,
+    "capacity_utilization_percent": 83.33,
+    "estimated_completion_minutes": 88.23,
+    "time_saved_vs_baseline_minutes": -6.63
+  }
+]

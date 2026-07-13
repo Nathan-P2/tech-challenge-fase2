@@ -51,10 +51,11 @@ input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--acce
 .route-map { width: 100%; height: 360px; margin-top: 20px; background: #fafbf9; border: 1px solid #edf0ed; }
 .generation { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 14px; color: var(--muted); font-size: 11px; }
 .generation strong { color: var(--ink); }
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 20px; background: var(--line); border: 1px solid var(--line); }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 20px; background: var(--line); border: 1px solid var(--line); }
 .metrics > div { padding: 15px; display: grid; gap: 7px; background: white; }
 .metrics span { color: var(--muted); font-size: 9px; }
 .metrics strong { font-size: 16px; }
+.metrics small { color: var(--muted); font-size: 8px; }
 .routes { margin-top: 14px; border-top: 1px solid var(--line); }
 .routes article { display: grid; grid-template-columns: 8px 1fr auto; align-items: center; gap: 12px; padding: 14px 2px; border-bottom: 1px solid var(--line); }
 .routes i { width: 8px; height: 8px; border-radius: 50%; }
@@ -75,6 +76,9 @@ input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--acce
 .report p { color: #b5c0c5; font-size: 11px; line-height: 1.65; }
 .report button { margin-top: 12px; padding: 12px 17px; border: 0; background: var(--accent); color: white; font-weight: 750; font-size: 11px; }
 .report button:disabled { opacity: .65; cursor: wait; }
+.history-summary { margin-top: 18px; padding: 10px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #405762; border-bottom: 1px solid #405762; color: #b5c0c5; font-size: 10px; }
+.history-summary strong { color: white; }
+.history-summary button { margin: 0; padding: 4px 0; background: transparent; color: #e99a89; text-decoration: underline; }
 .question-form { display: grid; gap: 7px; margin-top: 22px; }
 .question-form label { color: #d7dfe2; font-size: 10px; font-weight: 700; }
 .question-form textarea { width: 100%; resize: vertical; padding: 10px 11px; border: 1px solid #49606b; background: #203a47; color: white; font-size: 11px; line-height: 1.45; outline: none; }

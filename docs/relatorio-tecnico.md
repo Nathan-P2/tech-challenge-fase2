@@ -63,12 +63,19 @@ O algoritmo aceitou 0,42 km adicionais para antecipar entregas críticas e reduz
 
 ## 6. Uso de recursos
 
-O relatório utiliza dois indicadores mensuráveis:
+O relatório utiliza três indicadores mensuráveis:
 
 - Distância total, usada como aproximação do consumo operacional;
 - Ocupação da capacidade, calculada por `carga total / capacidade total`.
+- Tempo estimado para conclusão da operação.
 
-Economia de tempo não é calculada porque o cenário não possui duração de deslocamento, trânsito ou janelas de atendimento. A LLM é instruída a declarar essa limitação e não inventar valores.
+A estimativa assume velocidade média de 30 km/h e 8 minutos de atendimento por entrega. Para cada veículo:
+
+```text
+tempo da rota = distância / velocidade + atendimentos × 8 minutos
+```
+
+Como os veículos trabalham em paralelo, o tempo da operação é o maior tempo entre as rotas. A economia é calculada por `tempo do baseline - tempo otimizado`. Valor positivo indica economia e valor negativo indica tempo adicional. As premissas aparecem no JSON, no relatório local e no prompt da LLM.
 
 ## 7. Integração com LLM
 
@@ -79,10 +86,11 @@ A OpenRouter é acessada com o modelo configurado em `OPENROUTER_MODEL`, usando 
 - Plano otimizado e baseline;
 - Carga, capacidade, distância e restrições;
 - Proibição de inventar ruas, horários, durações ou valores;
-- Solicitação de instruções, relatório diário e melhorias;
+- Solicitação de instruções, relatório diário, economia estimada e melhorias;
+- Histórico das últimas 30 execuções para identificação de tendências;
 - Pergunta opcional em linguagem natural.
 
-O terminal aceita `--question`. O frontend também possui um campo de pergunta e usa o endpoint documentado em `docs/api.md`. Sem chave, o modo demonstração mantém o restante do fluxo utilizável, mas não representa uma resposta da LLM.
+O terminal aceita `--question`. O frontend também possui um campo de pergunta e usa o endpoint documentado em `docs/api.md`. O terminal mantém `output/run_history.json`; o frontend usa `localStorage`. Quando existem ao menos duas execuções, o prompt exige que as recomendações sejam justificadas pelas tendências de fitness, distância, prioridade, ocupação e tempo. Sem chave, o modo demonstração mantém o restante do fluxo utilizável, mas não representa uma resposta da LLM.
 
 ## 8. Visualização
 
@@ -100,7 +108,7 @@ Os testes Python validam:
 - Penalização de excesso de autonomia;
 - Divisão entre veículos;
 - Prioridade crítica;
-- Prompt, relatório, métricas de recursos, SVG e configuração OpenRouter.
+- Prompt, relatório, métricas de recursos e tempo, SVG e configuração OpenRouter.
 
 Os testes do frontend validam build, renderização em português, integração com `/api/report`, campo de perguntas e renderização segura de Markdown.
 
@@ -113,8 +121,8 @@ O pacote Python usa a estrutura `src/`, configuração em `pyproject.toml`, ambi
 - Coordenadas e demandas são fictícias;
 - Distâncias são euclidianas e não representam ruas ou trânsito;
 - Não existem janelas de horário;
-- Não há cálculo de tempo economizado;
-- O relatório é diário, não agrega histórico semanal;
+- O tempo é estimado e não representa trânsito real;
+- O histórico é limitado a 30 execuções locais e não é compartilhado entre dispositivos;
 - Nuvem e infraestrutura como código não fazem parte do escopo.
 
 Essas limitações mantêm o projeto reproduzível e concentram a entrega nos requisitos obrigatórios do algoritmo genético, restrições, visualização, testes e integração com LLM.

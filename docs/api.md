@@ -27,6 +27,16 @@ Corpo:
   },
   "generation": 80,
   "baseline": {},
+  "timeAssumptions": {
+    "averageSpeedKmh": 30,
+    "serviceTimeMinutes": 8
+  },
+  "timeComparison": {
+    "baselineCompletionMinutes": 81.6,
+    "optimizedCompletionMinutes": 88.24,
+    "timeSavedMinutes": -6.64
+  },
+  "history": [],
   "question": "Qual entrega crítica deve sair primeiro?"
 }
 ```
@@ -37,6 +47,9 @@ Corpo:
 | `plan.routes` | Sim | Rotas e entregas separadas por veículo. |
 | `generation` | Não | Geração selecionada no frontend. |
 | `baseline` | Não | Resultado da heurística do vizinho mais próximo. |
+| `timeAssumptions` | Não | Velocidade média e tempo de atendimento usados na estimativa. |
+| `timeComparison` | Não | Tempo estimado do baseline, do plano e economia calculada. |
+| `history` | Não | Até 30 execuções anteriores usadas para identificar tendências. |
 | `question` | Não | Pergunta de até 500 caracteres. Quando omitida, gera o relatório diário. |
 
 ### Resposta de sucesso
@@ -49,6 +62,8 @@ Corpo:
 ```
 
 `mode` será `openrouter` quando a LLM for chamada e `demo` quando `OPENROUTER_API_KEY` não estiver configurada.
+
+O histórico é mantido no `localStorage` do navegador. Ele contém somente parâmetros e métricas fictícias, sem chave de API ou dados pessoais.
 
 ### Erros
 

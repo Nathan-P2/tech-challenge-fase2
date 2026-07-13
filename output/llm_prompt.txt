@@ -1,4 +1,4 @@
-Voce auxilia a logistica de medicamentos de um hospital. Prioridade 3 significa entrega critica. Nao invente ruas, tempos ou dados. Gere instrucoes objetivas por veiculo, um resumo diario de eficiencia comparando com a referencia e tres melhorias praticas. Avalie distancia e ocupacao da capacidade como indicadores de uso de recursos. Nao estime economia de tempo porque nao existem dados de duracao.
+Voce auxilia a logistica de medicamentos de um hospital. Prioridade 3 significa entrega critica. Nao invente ruas, tempos ou dados. Gere instrucoes objetivas por veiculo, um resumo diario de eficiencia comparando com a referencia e tres melhorias praticas. Avalie distancia e ocupacao da capacidade como indicadores de uso de recursos. Informe a economia estimada de tempo e deixe claras as premissas. Quando houver pelo menos duas execucoes no historico, identifique tendencias e baseie as melhorias nesses padroes; caso contrario, informe que o historico e insuficiente.
 
 Dados:
 {
@@ -13,6 +13,10 @@ Dados:
     "total_load": 30,
     "total_vehicle_capacity": 36,
     "capacity_utilization_percent": 83.33,
+    "estimated_time": {
+      "total_vehicle_minutes": 238.67,
+      "operation_completion_minutes": 88.23
+    },
     "routes": [
       {
         "vehicle": "V1",
@@ -20,6 +24,7 @@ Dados:
         "max_distance_km": 30,
         "load": 9,
         "distance_km": 26.56,
+        "estimated_time_minutes": 77.12,
         "deliveries": [
           {
             "id": "U08",
@@ -47,6 +52,7 @@ Dados:
         "max_distance_km": 30,
         "load": 11,
         "distance_km": 28.12,
+        "estimated_time_minutes": 88.23,
         "deliveries": [
           {
             "id": "U04",
@@ -80,6 +86,7 @@ Dados:
         "max_distance_km": 30,
         "load": 10,
         "distance_km": 24.66,
+        "estimated_time_minutes": 73.31,
         "deliveries": [
           {
             "id": "U05",
@@ -113,6 +120,10 @@ Dados:
     "total_load": 30,
     "total_vehicle_capacity": 36,
     "capacity_utilization_percent": 83.33,
+    "estimated_time": {
+      "total_vehicle_minutes": 237.83,
+      "operation_completion_minutes": 81.6
+    },
     "routes": [
       {
         "vehicle": "V1",
@@ -120,6 +131,7 @@ Dados:
         "max_distance_km": 30,
         "load": 12,
         "distance_km": 24.8,
+        "estimated_time_minutes": 81.6,
         "deliveries": [
           {
             "id": "U10",
@@ -153,6 +165,7 @@ Dados:
         "max_distance_km": 30,
         "load": 9,
         "distance_km": 27.5,
+        "estimated_time_minutes": 79.0,
         "deliveries": [
           {
             "id": "U07",
@@ -180,6 +193,7 @@ Dados:
         "max_distance_km": 30,
         "load": 9,
         "distance_km": 26.62,
+        "estimated_time_minutes": 77.24,
         "deliveries": [
           {
             "id": "U09",
@@ -202,5 +216,63 @@ Dados:
         ]
       }
     ]
-  }
+  },
+  "time_assumptions": {
+    "average_speed_kmh": 30.0,
+    "service_time_minutes_per_delivery": 8.0
+  },
+  "time_comparison": {
+    "baseline_completion_minutes": 81.6,
+    "optimized_completion_minutes": 88.23,
+    "time_saved_minutes": -6.63,
+    "baseline_total_vehicle_minutes": 237.83,
+    "optimized_total_vehicle_minutes": 238.67
+  },
+  "execution_history": [
+    {
+      "executed_at": "2026-07-13T18:36:09.585528+00:00",
+      "configuration": {
+        "population": 80,
+        "generations": 120,
+        "mutation_probability": 0.2,
+        "seed": 7
+      },
+      "fitness": 379.33,
+      "total_distance_km": 79.33,
+      "priority_penalty": 75.0,
+      "capacity_utilization_percent": 83.33,
+      "estimated_completion_minutes": 88.23,
+      "time_saved_vs_baseline_minutes": -6.63
+    },
+    {
+      "executed_at": "2026-07-13T18:36:10.030137+00:00",
+      "configuration": {
+        "population": 100,
+        "generations": 180,
+        "mutation_probability": 0.35,
+        "seed": 19
+      },
+      "fitness": 379.33,
+      "total_distance_km": 79.33,
+      "priority_penalty": 75.0,
+      "capacity_utilization_percent": 83.33,
+      "estimated_completion_minutes": 88.23,
+      "time_saved_vs_baseline_minutes": -6.63
+    },
+    {
+      "executed_at": "2026-07-13T18:36:10.666847+00:00",
+      "configuration": {
+        "population": 120,
+        "generations": 250,
+        "mutation_probability": 0.25,
+        "seed": 42
+      },
+      "fitness": 379.33,
+      "total_distance_km": 79.33,
+      "priority_penalty": 75.0,
+      "capacity_utilization_percent": 83.33,
+      "estimated_completion_minutes": 88.23,
+      "time_saved_vs_baseline_minutes": -6.63
+    }
+  ]
 }
