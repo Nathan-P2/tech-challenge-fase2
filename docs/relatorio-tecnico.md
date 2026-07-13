@@ -86,11 +86,12 @@ A OpenRouter é acessada com o modelo configurado em `OPENROUTER_MODEL`, usando 
 - Plano otimizado e baseline;
 - Carga, capacidade, distância e restrições;
 - Proibição de inventar ruas, horários, durações ou valores;
-- Solicitação de instruções, relatório diário, economia estimada e melhorias;
+- Contrato de instruções por veículo com sequência, quantidade, prioridade, carga, capacidade, distância, autonomia, tempo e alertas;
+- Seleção entre relatório diário e semanal, economia estimada e melhorias;
 - Histórico das últimas 30 execuções para identificação de tendências;
 - Pergunta opcional em linguagem natural.
 
-O terminal aceita `--question`. O frontend também possui um campo de pergunta e usa o endpoint documentado em `docs/api.md`. O terminal mantém `output/run_history.json`; o frontend usa `localStorage`. Quando existem ao menos duas execuções, o prompt exige que as recomendações sejam justificadas pelas tendências de fitness, distância, prioridade, ocupação e tempo. Sem chave, o modo demonstração mantém o restante do fluxo utilizável, mas não representa uma resposta da LLM.
+O terminal aceita `--question` e `--report-type daily|weekly`. O frontend também possui um campo de pergunta e seleção de período, usando o endpoint documentado em `docs/api.md`. O terminal mantém `output/run_history.json`; o frontend usa `localStorage`. O relatório semanal considera os registros dos últimos sete dias. Quando existem ao menos duas execuções, o prompt exige que as recomendações sejam justificadas pelas tendências de fitness, distância, prioridade, ocupação e tempo. Sem chave, o modo demonstração mantém o restante do fluxo utilizável, mas não representa uma resposta da LLM.
 
 ## 8. Visualização
 
@@ -110,11 +111,11 @@ Os testes Python validam:
 - Prioridade crítica;
 - Prompt, relatório, métricas de recursos e tempo, SVG e configuração OpenRouter.
 
-Os testes do frontend validam build, renderização em português, integração com `/api/report`, campo de perguntas e renderização segura de Markdown.
+Os testes do frontend validam build, renderização em português, integração real com a função do endpoint, filtro semanal, contrato detalhado enviado à OpenRouter, modo demonstração, validação de requisição, campo de perguntas e renderização segura de Markdown.
 
 ## 10. Organização e execução
 
-O pacote Python usa a estrutura `src/`, configuração em `pyproject.toml`, ambiente virtual `venv` e comando `hospital-routes`. O frontend fica em `frontend/`, possui configuração própria e é executado localmente. A arquitetura detalhada está em `docs/arquitetura.md`.
+O pacote Python usa a estrutura `src/`, configuração em `pyproject.toml`, ambiente virtual `venv` e comando `hospital-routes`. O script `scripts/demo.py` executa três configurações e produz os artefatos de demonstração. O frontend fica em `frontend/`, possui configuração própria e é executado localmente. A arquitetura detalhada está em `docs/arquitetura.md`.
 
 ## 11. Limitações
 

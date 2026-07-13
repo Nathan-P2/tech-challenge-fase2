@@ -43,5 +43,20 @@
     "capacity_utilization_percent": 83.33,
     "estimated_completion_minutes": 88.23,
     "time_saved_vs_baseline_minutes": -6.63
+  },
+  {
+    "executed_at": "2026-07-13T18:57:22.633608+00:00",
+    "configuration": {
+      "population": 120,
+      "generations": 250,
+      "mutation_probability": 0.25,
+      "seed": 42
+    },
+    "fitness": 379.33,
+    "total_distance_km": 79.33,
+    "priority_penalty": 75.0,
+    "capacity_utilization_percent": 83.33,
+    "estimated_completion_minutes": 88.23,
+    "time_saved_vs_baseline_minutes": -6.63
   }
 ]

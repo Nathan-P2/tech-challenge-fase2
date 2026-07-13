@@ -13,6 +13,7 @@ from .reporting import (
     generate_llm_text,
     local_report,
     plan_as_dict,
+    select_report_history,
     time_comparison,
 )
 from .visualization import save_svg
@@ -27,6 +28,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", type=Path, default=Path("output"))
     parser.add_argument("--llm", action="store_true", help="Chama a API da OpenRouter")
     parser.add_argument("--question", help="Pergunta em linguagem natural sobre as rotas")
+    parser.add_argument(
+        "--report-type",
+        choices=("daily", "weekly"),
+        default="daily",
+        help="Periodo do relatorio: daily ou weekly",
+    )
     return parser
 
 
@@ -79,8 +86,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     }
     history = [*history, history_entry][-30:]
 
-    prompt = build_prompt(depot, optimized, baseline, args.question, history)
-    report = generate_llm_text(prompt) if args.llm else local_report(optimized, baseline)
+    prompt = build_prompt(
+        depot,
+        optimized,
+        baseline,
+        args.question,
+        history,
+        args.report_type,
+    )
+    report = (
+        generate_llm_text(prompt)
+        if args.llm
+        else local_report(optimized, baseline, args.report_type, history)
+    )
     summary = {
         "configuration": {
             "population": args.population,
@@ -103,7 +121,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "service_time_minutes_per_delivery": 8.0,
         },
         "time_comparison": comparison,
-        "history_entries_analyzed": len(history),
+        "history_entries_analyzed": len(
+            select_report_history(history, args.report_type)
+        ),
+        "report_type": args.report_type,
     }
 
     (args.output / "summary.json").write_text(

@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -59,6 +60,53 @@ class OutputTest(unittest.TestCase):
         self.assertIn("time_saved_minutes", comparison)
         self.assertGreater(comparison["baseline_completion_minutes"], 0)
         self.assertGreater(comparison["optimized_completion_minutes"], 0)
+
+    def test_weekly_report_uses_history(self) -> None:
+        history = [
+            {
+                "executed_at": datetime.now(timezone.utc).isoformat(),
+                "fitness": 400,
+                "total_distance_km": 80,
+                "estimated_completion_minutes": 90,
+                "time_saved_vs_baseline_minutes": -5,
+            },
+            {
+                "executed_at": datetime.now(timezone.utc).isoformat(),
+                "fitness": 380,
+                "total_distance_km": 78,
+                "estimated_completion_minutes": 85,
+                "time_saved_vs_baseline_minutes": 2,
+            },
+        ]
+        prompt = build_prompt(
+            self.depot,
+            self.plan,
+            self.baseline,
+            history=history,
+            report_type="weekly",
+        )
+        report = local_report(
+            self.plan,
+            self.baseline,
+            report_type="weekly",
+            history=history,
+        )
+
+        self.assertIn("relatorio semanal consolidado", prompt)
+        self.assertIn("quantidade e prioridade", prompt)
+        self.assertIn('"report_type": "weekly"', prompt)
+        self.assertIn("RELATORIO SEMANAL", report)
+        self.assertIn("Execucoes analisadas: 2", report)
+        self.assertIn("Fitness medio: 390.00", report)
+
+    def test_rejects_unknown_report_type(self) -> None:
+        with self.assertRaises(ValueError):
+            build_prompt(
+                self.depot,
+                self.plan,
+                self.baseline,
+                report_type="monthly",
+            )
 
     def test_svg_contains_route_map(self) -> None:
         svg = render_svg(self.depot, self.plan)

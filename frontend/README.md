@@ -16,7 +16,7 @@ Acesse `http://localhost:3000`.
 
 Informe `OPENROUTER_API_KEY` em `.env.local`. O arquivo é ignorado pelo Git. O modelo pode ser alterado por `OPENROUTER_MODEL`.
 
-O botão de relatório gera instruções diárias. O campo de pergunta responde dúvidas específicas sobre entregas, prioridades e veículos. O frontend estima o tempo usando 30 km/h e 8 minutos por entrega e guarda até 30 execuções no `localStorage` para que a LLM identifique padrões. Sem chave, o sistema usa apenas um texto demonstrativo.
+O botão de relatório gera instruções diárias ou semanais. O campo de pergunta responde dúvidas específicas sobre entregas, prioridades e veículos. O frontend estima o tempo usando 30 km/h e 8 minutos por entrega e guarda até 30 execuções no `localStorage` para que a LLM identifique padrões. O período semanal considera somente os últimos sete dias. Sem chave, o sistema usa apenas um texto demonstrativo.
 
 ## Validar
 

@@ -486,5 +486,6 @@
     "baseline_total_vehicle_minutes": 237.83,
     "optimized_total_vehicle_minutes": 238.67
   },
-  "history_entries_analyzed": 3
+  "history_entries_analyzed": 4,
+  "report_type": "daily"
 }

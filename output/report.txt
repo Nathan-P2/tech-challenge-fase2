@@ -11,14 +11,24 @@ Tempo estimado otimizado: 88.23 min
 Economia estimada de tempo: -6.63 min
 Plano viavel: sim
 
-V1: Hospital Central -> Paciente Carla -> Pronto Atendimento -> Laboratorio Regional -> Hospital Central
-Carga: 9.0/12.0; distancia: 26.56/30.00 km
+V1: saida e retorno ao Hospital Central
+Carga: 9.0/12.0; distancia: 26.56/30.00 km; tempo estimado: 77.12 min
+  1. Paciente Carla (U08): 2.0 unidades; prioridade 3
+  2. Pronto Atendimento (U09): 4.0 unidades; prioridade 3
+  3. Laboratorio Regional (U10): 3.0 unidades; prioridade 2
 
-V2: Hospital Central -> Paciente Ana -> UPA Norte -> Clinica Leste -> UBS Jardim -> Hospital Central
-Carga: 11.0/12.0; distancia: 28.12/30.00 km
+V2: saida e retorno ao Hospital Central
+Carga: 11.0/12.0; distancia: 28.12/30.00 km; tempo estimado: 88.23 min
+  1. Paciente Ana (U04): 2.0 unidades; prioridade 3
+  2. UPA Norte (U01): 4.0 unidades; prioridade 3
+  3. Clinica Leste (U02): 3.0 unidades; prioridade 2
+  4. UBS Jardim (U03): 2.0 unidades; prioridade 1
 
-V3: Hospital Central -> Paciente Bruno -> Clinica Oeste -> UBS Sul -> Hospital Central
-Carga: 10.0/12.0; distancia: 24.66/30.00 km
+V3: saida e retorno ao Hospital Central
+Carga: 10.0/12.0; distancia: 24.66/30.00 km; tempo estimado: 73.31 min
+  1. Paciente Bruno (U05): 3.0 unidades; prioridade 2
+  2. Clinica Oeste (U07): 3.0 unidades; prioridade 1
+  3. UBS Sul (U06): 4.0 unidades; prioridade 1
 
 Premissas de tempo: 30 km/h e 8 min de atendimento por entrega.
 Valor positivo indica economia; valor negativo indica tempo adicional.

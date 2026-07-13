@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .models import Depot, RoutePlan, VehicleRoute
@@ -9,6 +10,7 @@ from .models import Depot, RoutePlan, VehicleRoute
 
 AVERAGE_SPEED_KMH = 30.0
 SERVICE_TIME_MINUTES = 8.0
+REPORT_TYPES = {"daily", "weekly"}
 
 
 def estimated_route_time_minutes(route: VehicleRoute) -> float:
@@ -39,6 +41,48 @@ def time_comparison(optimized: RoutePlan, baseline: RoutePlan) -> dict[str, floa
         "baseline_total_vehicle_minutes": baseline_time["total_vehicle_minutes"],
         "optimized_total_vehicle_minutes": optimized_time["total_vehicle_minutes"],
     }
+
+
+def _report_type(value: str) -> str:
+    if value not in REPORT_TYPES:
+        raise ValueError("O tipo de relatorio deve ser daily ou weekly")
+    return value
+
+
+def select_report_history(
+    history: list[dict[str, Any]],
+    report_type: str,
+    now: datetime | None = None,
+) -> list[dict[str, Any]]:
+    report_type = _report_type(report_type)
+    limited = history[-30:]
+    if report_type == "daily":
+        return limited
+
+    reference = now or datetime.now(timezone.utc)
+    cutoff = reference - timedelta(days=7)
+    selected: list[dict[str, Any]] = []
+    for entry in limited:
+        value = entry.get("executed_at") or entry.get("executedAt")
+        if not isinstance(value, str):
+            continue
+        try:
+            executed_at = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if executed_at.tzinfo is None:
+            executed_at = executed_at.replace(tzinfo=timezone.utc)
+        if cutoff <= executed_at <= reference:
+            selected.append(entry)
+    return selected
+
+
+def _numeric_history_average(
+    history: list[dict[str, Any]], field: str
+) -> float | None:
+    values = [entry.get(field) for entry in history]
+    numbers = [float(value) for value in values if isinstance(value, (int, float))]
+    return round(sum(numbers) / len(numbers), 2) if numbers else None
 
 
 def plan_as_dict(plan: RoutePlan) -> dict[str, Any]:
@@ -88,9 +132,13 @@ def build_prompt(
     baseline: RoutePlan,
     question: str | None = None,
     history: list[dict[str, Any]] | None = None,
+    report_type: str = "daily",
 ) -> str:
+    report_type = _report_type(report_type)
+    selected_history = select_report_history(history or [], report_type)
     data = {
         "depot": depot.name,
+        "report_type": report_type,
         "optimized": plan_as_dict(optimized),
         "nearest_neighbor_baseline": plan_as_dict(baseline),
         "time_assumptions": {
@@ -98,18 +146,32 @@ def build_prompt(
             "service_time_minutes_per_delivery": SERVICE_TIME_MINUTES,
         },
         "time_comparison": time_comparison(optimized, baseline),
-        "execution_history": (history or [])[-30:],
+        "execution_history": selected_history,
     }
+    instructions = (
+        "Para cada veiculo, informe saida e retorno ao Hospital Central, ordem exata "
+        "das paradas, identificador, nome, quantidade e prioridade de cada entrega, "
+        "carga total/capacidade, distancia/autonomia, tempo estimado e alertas de restricao. "
+    )
+    report_request = (
+        "Gere um relatorio semanal consolidado usando o historico fornecido. Compare as "
+        "execucoes, destaque tendencias, melhor configuracao, problemas recorrentes, "
+        "economia de tempo e uso de recursos. "
+        if report_type == "weekly"
+        else (
+            "Gere um relatorio diario de eficiencia comparando o plano atual com a "
+            "referencia. Avalie distancia, capacidade, prioridades, tempo e recursos. "
+        )
+    )
     task = (
         "Responda somente a pergunta do usuario usando os dados e o historico fornecidos."
         if question
         else (
-            "Gere instrucoes objetivas por veiculo, um resumo diario de eficiencia "
-            "comparando com a referencia e tres melhorias praticas. Avalie distancia "
-            "e ocupacao da capacidade como indicadores de uso de recursos. Informe a "
-            "economia estimada de tempo e deixe claras as premissas. Quando houver pelo "
-            "menos duas execucoes no historico, identifique tendencias e baseie as "
-            "melhorias nesses padroes; caso contrario, informe que o historico e insuficiente."
+            instructions
+            + report_request
+            + "Apresente tres melhorias praticas. Quando houver pelo menos duas execucoes "
+            "no historico, justifique as melhorias pelos padroes identificados; caso "
+            "contrario, informe que o historico e insuficiente."
         )
     )
     return (
@@ -122,7 +184,14 @@ def build_prompt(
     )
 
 
-def local_report(optimized: RoutePlan, baseline: RoutePlan) -> str:
+def local_report(
+    optimized: RoutePlan,
+    baseline: RoutePlan,
+    report_type: str = "daily",
+    history: list[dict[str, Any]] | None = None,
+) -> str:
+    report_type = _report_type(report_type)
+    selected_history = select_report_history(history or [], report_type)
     distance_delta = optimized.total_distance - baseline.total_distance
     fitness_improvement = baseline.fitness - optimized.fitness
     priority_improvement = baseline.priority_penalty - optimized.priority_penalty
@@ -131,7 +200,7 @@ def local_report(optimized: RoutePlan, baseline: RoutePlan) -> str:
     capacity_utilization = 100 * total_load / total_capacity
     estimated_times = time_comparison(optimized, baseline)
     lines = [
-        "RELATORIO DIARIO DE ROTAS",
+        f"RELATORIO {'SEMANAL' if report_type == 'weekly' else 'DIARIO'} DE ROTAS",
         "",
         f"Distancia otimizada: {optimized.total_distance:.2f} km",
         f"Referencia (vizinho mais proximo): {baseline.total_distance:.2f} km",
@@ -145,16 +214,38 @@ def local_report(optimized: RoutePlan, baseline: RoutePlan) -> str:
         f"Plano viavel: {'sim' if optimized.feasible else 'nao'}",
         "",
     ]
-    for route in optimized.routes:
-        sequence = " -> ".join(item.name for item in route.deliveries) or "sem entregas"
+    if report_type == "weekly":
         lines.extend(
             [
-                f"{route.vehicle.id}: Hospital Central -> {sequence} -> Hospital Central",
-                f"Carga: {route.load:.1f}/{route.vehicle.capacity:.1f}; "
-                f"distancia: {route.distance:.2f}/{route.vehicle.max_distance:.2f} km",
+                f"Execucoes analisadas: {len(selected_history)}",
+                f"Fitness medio: {_numeric_history_average(selected_history, 'fitness') or 0:.2f}",
+                "Distancia media: "
+                f"{_numeric_history_average(selected_history, 'total_distance_km') or 0:.2f} km",
+                "Tempo medio de conclusao: "
+                f"{_numeric_history_average(selected_history, 'estimated_completion_minutes') or 0:.2f} min",
+                "Economia media: "
+                f"{_numeric_history_average(selected_history, 'time_saved_vs_baseline_minutes') or 0:+.2f} min",
                 "",
             ]
         )
+    for route in optimized.routes:
+        lines.extend(
+            [
+                f"{route.vehicle.id}: saida e retorno ao Hospital Central",
+                f"Carga: {route.load:.1f}/{route.vehicle.capacity:.1f}; "
+                f"distancia: {route.distance:.2f}/{route.vehicle.max_distance:.2f} km; "
+                f"tempo estimado: {estimated_route_time_minutes(route):.2f} min",
+            ]
+        )
+        if route.deliveries:
+            for position, item in enumerate(route.deliveries, start=1):
+                lines.append(
+                    f"  {position}. {item.name} ({item.id}): {item.demand:.1f} unidades; "
+                    f"prioridade {item.priority}"
+                )
+        else:
+            lines.append("  Sem entregas")
+        lines.append("")
     lines.extend(
         [
             f"Premissas de tempo: {AVERAGE_SPEED_KMH:.0f} km/h e "

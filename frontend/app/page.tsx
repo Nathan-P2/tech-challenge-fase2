@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 type Delivery = { id: string; name: string; x: number; y: number; demand: number; priority: 1 | 2 | 3 };
 type Vehicle = { id: string; capacity: number; maxDistance: number };
@@ -9,6 +9,7 @@ type Plan = { routes: VehicleRoute[]; totalDistance: number; priorityPenalty: nu
 type RankedGenome = { genome: string[]; plan: Plan };
 type Snapshot = { generation: number; best: number; average: number; plan: Plan };
 type Config = { population: number; generations: number; mutation: number; seed: number };
+type ReportType = "daily" | "weekly";
 type HistoryEntry = {
   executedAt: string;
   configuration: Config;
@@ -43,6 +44,33 @@ const DEFAULT_CONFIG: Config = { population: 50, generations: 80, mutation: 0.25
 const AVERAGE_SPEED_KMH = 30;
 const SERVICE_TIME_MINUTES = 8;
 const HISTORY_KEY = "rota-gen-history";
+const HISTORY_EVENT = "rota-gen-history-change";
+
+function subscribeHistory(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(HISTORY_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(HISTORY_EVENT, callback);
+  };
+}
+
+function historySnapshot() {
+  return window.localStorage.getItem(HISTORY_KEY) || "[]";
+}
+
+function serverHistorySnapshot() {
+  return "[]";
+}
+
+function parseHistory(snapshot: string): HistoryEntry[] {
+  try {
+    const stored: unknown = JSON.parse(snapshot);
+    return Array.isArray(stored) ? stored.slice(-30) as HistoryEntry[] : [];
+  } catch {
+    return [];
+  }
+}
 
 function createRandom(seed: number) {
   let value = seed >>> 0;
@@ -312,23 +340,20 @@ export default function Home() {
   const [reportMode, setReportMode] = useState("");
   const [loadingReport, setLoadingReport] = useState(false);
   const [question, setQuestion] = useState("");
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [reportType, setReportType] = useState<ReportType>("daily");
+  const storedHistory = useSyncExternalStore(
+    subscribeHistory,
+    historySnapshot,
+    serverHistorySnapshot,
+  );
+  const history = useMemo(() => parseHistory(storedHistory), [storedHistory]);
   const active = snapshots[current];
   const baseline = useMemo(() => decode(nearestNeighbor()), []);
 
-  useEffect(() => {
-    try {
-      const stored = JSON.parse(window.localStorage.getItem(HISTORY_KEY) || "[]");
-      if (Array.isArray(stored)) setHistory(stored.slice(-30));
-    } catch {
-      window.localStorage.removeItem(HISTORY_KEY);
-    }
-  }, []);
-
   function saveHistory(entries: HistoryEntry[]) {
     const limited = entries.slice(-30);
-    setHistory(limited);
     window.localStorage.setItem(HISTORY_KEY, JSON.stringify(limited));
+    window.dispatchEvent(new Event(HISTORY_EVENT));
   }
 
   function execute() {
@@ -357,6 +382,7 @@ export default function Home() {
             timeSavedMinutes: estimatedCompletionTime(baseline) - estimatedCompletionTime(active.plan),
           },
           history,
+          reportType,
           question: questionText || undefined,
         }),
       });
@@ -364,7 +390,8 @@ export default function Home() {
       const data = await response.json();
       setReport(data.report);
       const source = data.mode === "openrouter" ? "OpenRouter" : "Demonstração";
-      setReportMode(questionText ? `Resposta · ${source}` : `Relatório · ${source}`);
+      const period = reportType === "weekly" ? "semanal" : "diário";
+      setReportMode(questionText ? `Resposta · ${source}` : `Relatório ${period} · ${source}`);
     } catch {
       setReport("Não foi possível gerar o relatório. Verifique a configuração e tente novamente.");
       setReportMode("Erro");
@@ -439,7 +466,7 @@ export default function Home() {
     </section>
 
     <section className="report" id="relatorio">
-      <div><small>Relatório operacional</small><h2>Consulte a rota em linguagem natural</h2><p>Gere o relatório diário ou faça uma pergunta objetiva sobre entregas, prioridades e veículos.</p><div className="history-summary"><span>Histórico local: <strong>{history.length}/30 execuções</strong></span>{history.length > 0 && <button onClick={() => saveHistory([])}>Limpar</button>}</div><button onClick={() => requestAnalysis()} disabled={loadingReport}>{loadingReport ? "Processando..." : "Gerar relatório diário"}</button><div className="question-form"><label htmlFor="route-question">Pergunta sobre a rota</label><textarea id="route-question" maxLength={500} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ex.: Qual padrão aparece nas últimas execuções?" /><button onClick={() => requestAnalysis(question.trim())} disabled={loadingReport || !question.trim()}>Enviar pergunta</button></div></div>
+      <div><small>Relatório operacional</small><h2>Consulte a rota em linguagem natural</h2><p>Gere um relatório ou faça uma pergunta objetiva sobre entregas, prioridades e veículos.</p><div className="history-summary"><span>Histórico local: <strong>{history.length}/30 execuções</strong></span>{history.length > 0 && <button onClick={() => saveHistory([])}>Limpar</button>}</div><label className="report-period" htmlFor="report-period">Período<select id="report-period" value={reportType} onChange={(event) => setReportType(event.target.value as ReportType)}><option value="daily">Diário</option><option value="weekly">Semanal</option></select></label><button onClick={() => requestAnalysis()} disabled={loadingReport}>{loadingReport ? "Processando..." : `Gerar relatório ${reportType === "weekly" ? "semanal" : "diário"}`}</button><div className="question-form"><label htmlFor="route-question">Pergunta sobre a rota</label><textarea id="route-question" maxLength={500} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ex.: Qual padrão aparece nas últimas execuções?" /><button onClick={() => requestAnalysis(question.trim())} disabled={loadingReport || !question.trim()}>Enviar pergunta</button></div></div>
       <div className="report-box"><b>{reportMode || "Resultado"}</b>{report ? <MarkdownReport text={report} /> : <p>O relatório aparecerá aqui após clicar no botão.</p>}</div>
     </section>
 

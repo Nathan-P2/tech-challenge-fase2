@@ -11,7 +11,7 @@ O algoritmo foi adaptado do projeto [sergiopolimante/genetic_algorithm_tsp](http
 - Limites de carga e autonomia;
 - Comparação com vizinho mais próximo;
 - Mapa SVG e frontend interativo;
-- Relatório diário via OpenRouter;
+- Relatórios diário e semanal via OpenRouter;
 - Perguntas em linguagem natural pelo terminal e frontend;
 - Estimativa e comparação de tempo operacional;
 - Histórico de até 30 execuções para identificar padrões;
@@ -47,6 +47,7 @@ A execução cria em `output/`:
 pip install -e '.[llm]'
 export OPENROUTER_API_KEY='sua-chave'
 hospital-routes --llm
+hospital-routes --llm --report-type weekly
 hospital-routes --llm --question 'Qual entrega crítica deve sair primeiro?'
 ```
 
@@ -62,7 +63,21 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Acesse `http://localhost:3000`. O frontend permite configurar o algoritmo, visualizar a geração selecionada, analisar a divisão entre veículos, comparar o tempo estimado, gerar o relatório diário e fazer perguntas sobre a rota. As últimas 30 execuções ficam no navegador e permitem que a LLM identifique tendências.
+Acesse `http://localhost:3000`. O frontend permite configurar o algoritmo, visualizar a geração selecionada, analisar a divisão entre veículos, comparar o tempo estimado, gerar relatórios diários ou semanais e fazer perguntas sobre a rota. O relatório semanal usa as execuções dos últimos sete dias. As últimas 30 execuções ficam no navegador e permitem que a LLM identifique tendências.
+
+## Demonstração completa
+
+O script executa três configurações do algoritmo e gera mapa, métricas, histórico e relatório semanal em `output/demo/`:
+
+```bash
+python3 scripts/demo.py
+```
+
+Para gerar o último relatório pela OpenRouter:
+
+```bash
+python3 scripts/demo.py --llm
+```
 
 ## Testes
 

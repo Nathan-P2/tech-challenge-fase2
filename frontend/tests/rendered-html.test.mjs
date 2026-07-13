@@ -21,6 +21,8 @@ test("renderiza o laboratorio Rota Gen", async () => {
   assert.match(html, /Executar algoritmo/);
   assert.match(html, /Pergunta sobre a rota/);
   assert.match(html, /Economia de tempo/);
+  assert.match(html, /Período/);
+  assert.match(html, /Semanal/);
   assert.doesNotMatch(html, /SkeletonPreview|react-loading-skeleton/i);
 });
 
@@ -38,6 +40,7 @@ test("mantem os metadados e a interface em portugues", async () => {
   assert.match(page, /question: questionText/);
   assert.match(page, /rota-gen-history/);
   assert.match(page, /localStorage/);
+  assert.match(page, /reportType/);
   assert.match(page, /function MarkdownReport/);
   assert.doesNotMatch(page, /<pre>\{report\}<\/pre>/);
   assert.doesNotMatch(packageJson, /site-creator-vinext-starter|react-loading-skeleton/);

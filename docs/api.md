@@ -37,6 +37,7 @@ Corpo:
     "timeSavedMinutes": -6.64
   },
   "history": [],
+  "reportType": "weekly",
   "question": "Qual entrega crítica deve sair primeiro?"
 }
 ```
@@ -50,7 +51,8 @@ Corpo:
 | `timeAssumptions` | Não | Velocidade média e tempo de atendimento usados na estimativa. |
 | `timeComparison` | Não | Tempo estimado do baseline, do plano e economia calculada. |
 | `history` | Não | Até 30 execuções anteriores usadas para identificar tendências. |
-| `question` | Não | Pergunta de até 500 caracteres. Quando omitida, gera o relatório diário. |
+| `reportType` | Não | `daily` ou `weekly`. O padrão é `daily`; o semanal usa os últimos sete dias. |
+| `question` | Não | Pergunta de até 500 caracteres. Quando omitida, gera o relatório do período selecionado. |
 
 ### Resposta de sucesso
 
@@ -63,14 +65,14 @@ Corpo:
 
 `mode` será `openrouter` quando a LLM for chamada e `demo` quando `OPENROUTER_API_KEY` não estiver configurada.
 
-O histórico é mantido no `localStorage` do navegador. Ele contém somente parâmetros e métricas fictícias, sem chave de API ou dados pessoais.
+O histórico é mantido no `localStorage` do navegador. Ele contém somente parâmetros e métricas fictícias, sem chave de API ou dados pessoais. O prompt exige instruções por veículo com sequência, quantidade, prioridade, carga, capacidade, distância, autonomia, tempo estimado e alertas.
 
 ### Erros
 
 | HTTP | Resposta | Causa |
 |---:|---|---|
 | 400 | `{"error":"JSON inválido"}` | Corpo não contém JSON válido. |
-| 400 | `{"error":"O campo plan.routes é obrigatório"}` | Plano ausente ou incompleto. |
+| 400 | `{"error":"O campo plan.routes é obrigatório e deve conter rotas válidas"}` | Plano ausente ou incompleto. |
 | 502 | `{"error":"Falha na OpenRouter"}` | OpenRouter recusou ou não concluiu a requisição. |
 | 502 | `{"error":"Resposta vazia"}` | A LLM não devolveu conteúdo. |
 

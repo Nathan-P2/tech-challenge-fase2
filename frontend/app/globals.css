@@ -13,7 +13,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-geist-sans), Arial, sans-serif; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; text-decoration: none; }
 main { min-height: 100vh; }
@@ -79,6 +79,9 @@ input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--acce
 .history-summary { margin-top: 18px; padding: 10px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #405762; border-bottom: 1px solid #405762; color: #b5c0c5; font-size: 10px; }
 .history-summary strong { color: white; }
 .history-summary button { margin: 0; padding: 4px 0; background: transparent; color: #e99a89; text-decoration: underline; }
+.report-period { display: grid; gap: 6px; margin-top: 15px; color: #d7dfe2; font-size: 10px; font-weight: 700; }
+.report-period select { width: 100%; padding: 10px 11px; border: 1px solid #49606b; background: #203a47; color: white; outline: none; }
+.report-period select:focus { border-color: #e97964; }
 .question-form { display: grid; gap: 7px; margin-top: 22px; }
 .question-form label { color: #d7dfe2; font-size: 10px; font-weight: 700; }
 .question-form textarea { width: 100%; resize: vertical; padding: 10px 11px; border: 1px solid #49606b; background: #203a47; color: white; font-size: 11px; line-height: 1.45; outline: none; }

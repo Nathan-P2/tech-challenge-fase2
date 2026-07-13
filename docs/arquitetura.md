@@ -31,7 +31,8 @@ flowchart LR
 | `optimizer.py` | Executa operadores genéticos, decodificação VRP e fitness. |
 | `reporting.py` | Serializa métricas, cria prompts e chama a OpenRouter. |
 | `visualization.py` | Produz o mapa SVG das rotas. |
-| `cli.py` | Executa o fluxo completo e salva os artefatos em `output/`. |
+| `cli.py` | Executa o fluxo completo, seleciona o período e salva os artefatos em `output/`. |
+| `scripts/demo.py` | Executa três configurações reproduzíveis para demonstração. |
 | `frontend/app/page.tsx` | Executa a simulação visual e apresenta os resultados. |
 | `frontend/app/api/report/route.ts` | Mantém a chave no servidor e intermedeia chamadas à OpenRouter. |
 | `localStorage` / `run_history.json` | Mantêm até 30 execuções para comparação de padrões. |
@@ -61,7 +62,7 @@ As penalidades altas tornam planos inviáveis muito menos competitivos. A priori
 
 ## Integração com LLM
 
-O navegador envia o plano para `POST /api/report`. O endpoint monta um prompt com rotas, cargas, distâncias, prioridades, baseline, estimativa de tempo, até 30 execuções anteriores e pergunta opcional. A chave `OPENROUTER_API_KEY` permanece no servidor. A resposta em Markdown é renderizada pelo frontend sem injeção de HTML.
+O navegador envia o plano para `POST /api/report`. O endpoint valida as rotas e monta um prompt com sequência, quantidades, cargas, distâncias, prioridades, baseline, estimativa de tempo, período, até 30 execuções anteriores e pergunta opcional. A chave `OPENROUTER_API_KEY` permanece no servidor. A resposta em Markdown é renderizada pelo frontend sem injeção de HTML.
 
 ## Tempo e padrões
 
@@ -75,6 +76,8 @@ economia = tempo_baseline - tempo_otimizado
 
 Como os veículos operam em paralelo, o maior tempo de rota representa a conclusão estimada da operação. Um resultado negativo em `economia` indica tempo adicional. O histórico contém configuração, fitness, distância, prioridade, capacidade, tempo e economia. A LLM compara essas métricas para identificar tendências recorrentes.
 
+O relatório diário descreve o plano atual e o compara com o vizinho mais próximo. O relatório semanal consolida somente as execuções dos últimos sete dias e destaca tendências, melhor configuração e problemas recorrentes.
+
 ## Decisões de implementação
 
 - Distância euclidiana: suficiente para demonstrar o algoritmo sem depender de mapas externos.
@@ -82,5 +85,5 @@ Como os veículos operam em paralelo, o maior tempo de rota representa a conclus
 - Execução local: nuvem e infraestrutura como código estão fora do escopo escolhido.
 - Semente configurável: permite repetir resultados e comparações.
 - Vizinho mais próximo: fornece uma referência simples para avaliar o algoritmo genético.
-- Relatório diário: distância, capacidade e tempo estimado são comparados com o baseline.
+- Relatórios diário e semanal: distância, capacidade e tempo estimado são comparados com o baseline.
 - Histórico limitado: somente as 30 execuções mais recentes são analisadas.

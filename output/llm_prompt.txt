@@ -1,8 +1,9 @@
-Voce auxilia a logistica de medicamentos de um hospital. Prioridade 3 significa entrega critica. Nao invente ruas, tempos ou dados. Gere instrucoes objetivas por veiculo, um resumo diario de eficiencia comparando com a referencia e tres melhorias praticas. Avalie distancia e ocupacao da capacidade como indicadores de uso de recursos. Informe a economia estimada de tempo e deixe claras as premissas. Quando houver pelo menos duas execucoes no historico, identifique tendencias e baseie as melhorias nesses padroes; caso contrario, informe que o historico e insuficiente.
+Voce auxilia a logistica de medicamentos de um hospital. Prioridade 3 significa entrega critica. Nao invente ruas, tempos ou dados. Para cada veiculo, informe saida e retorno ao Hospital Central, ordem exata das paradas, identificador, nome, quantidade e prioridade de cada entrega, carga total/capacidade, distancia/autonomia, tempo estimado e alertas de restricao. Gere um relatorio diario de eficiencia comparando o plano atual com a referencia. Avalie distancia, capacidade, prioridades, tempo e recursos. Apresente tres melhorias praticas. Quando houver pelo menos duas execucoes no historico, justifique as melhorias pelos padroes identificados; caso contrario, informe que o historico e insuficiente.
 
 Dados:
 {
   "depot": "Hospital Central",
+  "report_type": "daily",
   "optimized": {
     "fitness": 379.33,
     "total_distance_km": 79.33,
@@ -261,6 +262,21 @@ Dados:
     },
     {
       "executed_at": "2026-07-13T18:36:10.666847+00:00",
+      "configuration": {
+        "population": 120,
+        "generations": 250,
+        "mutation_probability": 0.25,
+        "seed": 42
+      },
+      "fitness": 379.33,
+      "total_distance_km": 79.33,
+      "priority_penalty": 75.0,
+      "capacity_utilization_percent": 83.33,
+      "estimated_completion_minutes": 88.23,
+      "time_saved_vs_baseline_minutes": -6.63
+    },
+    {
+      "executed_at": "2026-07-13T18:57:22.633608+00:00",
       "configuration": {
         "population": 120,
         "generations": 250,
