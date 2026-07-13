@@ -27,9 +27,10 @@ test("renderiza o laboratorio Rota Gen", async () => {
 });
 
 test("mantem os metadados e a interface em portugues", async () => {
-  const [page, layout, packageJson] = await Promise.all([
+  const [page, layout, styles, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
   assert.match(layout, /lang="pt-BR"/);
@@ -42,6 +43,9 @@ test("mantem os metadados e a interface em portugues", async () => {
   assert.match(page, /localStorage/);
   assert.match(page, /reportType/);
   assert.match(page, /function MarkdownReport/);
+  assert.match(page, /normalizeMarkdown/);
+  assert.match(styles, /\.report-box \{[^}]*height: 100%/s);
+  assert.match(styles, /\.markdown-report \{[^}]*flex: 1/s);
   assert.doesNotMatch(page, /<pre>\{report\}<\/pre>/);
   assert.doesNotMatch(packageJson, /site-creator-vinext-starter|react-loading-skeleton/);
 });

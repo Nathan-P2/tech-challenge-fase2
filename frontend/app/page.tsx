@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
+import { normalizeMarkdown } from "./markdown";
+
 type Delivery = { id: string; name: string; x: number; y: number; demand: number; priority: 1 | 2 | 3 };
 type Vehicle = { id: string; capacity: number; maxDistance: number };
 type VehicleRoute = { vehicle: Vehicle; deliveries: Delivery[]; load: number; distance: number };
@@ -255,8 +257,9 @@ function renderInlineMarkdown(text: string) {
 }
 
 function MarkdownReport({ text }: { text: string }) {
+  const normalized = normalizeMarkdown(text);
   return <div className="markdown-report">
-    {text.split(/\r?\n/).map((rawLine, index) => {
+    {normalized.split("\n").map((rawLine, index) => {
       const line = rawLine.trimEnd();
       if (!line.trim()) return <div className="md-space" key={`space-${index}`} />;
 
