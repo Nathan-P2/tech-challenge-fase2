@@ -1,0 +1,21 @@
+RELATORIO DIARIO DE ROTAS
+
+Distancia otimizada: 79.33 km
+Referencia (vizinho mais proximo): 78.92 km
+Variacao de distancia: +0.42 km
+Melhoria de fitness: 55.58 pontos
+Reducao da penalidade de prioridade: 14.00 pontos
+Ocupacao da capacidade total: 83.33%
+Plano viavel: sim
+
+V1: Hospital Central -> Paciente Carla -> Pronto Atendimento -> Laboratorio Regional -> Hospital Central
+Carga: 9.0/12.0; distancia: 26.56/30.00 km
+
+V2: Hospital Central -> Paciente Ana -> UPA Norte -> Clinica Leste -> UBS Jardim -> Hospital Central
+Carga: 11.0/12.0; distancia: 28.12/30.00 km
+
+V3: Hospital Central -> Paciente Bruno -> Clinica Oeste -> UBS Sul -> Hospital Central
+Carga: 10.0/12.0; distancia: 24.66/30.00 km
+
+Tempo economizado: nao calculado, pois o cenario nao possui dados de duracao.
+Use --llm para gerar instrucoes detalhadas com a LLM.

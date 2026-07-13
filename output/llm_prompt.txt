@@ -1,0 +1,206 @@
+Voce auxilia a logistica de medicamentos de um hospital. Prioridade 3 significa entrega critica. Nao invente ruas, tempos ou dados. Gere instrucoes objetivas por veiculo, um resumo diario de eficiencia comparando com a referencia e tres melhorias praticas. Avalie distancia e ocupacao da capacidade como indicadores de uso de recursos. Nao estime economia de tempo porque nao existem dados de duracao.
+
+Dados:
+{
+  "depot": "Hospital Central",
+  "optimized": {
+    "fitness": 379.33,
+    "total_distance_km": 79.33,
+    "feasible": true,
+    "priority_penalty": 75.0,
+    "overload": 0.0,
+    "autonomy_excess_km": 0.0,
+    "total_load": 30,
+    "total_vehicle_capacity": 36,
+    "capacity_utilization_percent": 83.33,
+    "routes": [
+      {
+        "vehicle": "V1",
+        "capacity": 12,
+        "max_distance_km": 30,
+        "load": 9,
+        "distance_km": 26.56,
+        "deliveries": [
+          {
+            "id": "U08",
+            "name": "Paciente Carla",
+            "demand": 2,
+            "priority": 3
+          },
+          {
+            "id": "U09",
+            "name": "Pronto Atendimento",
+            "demand": 4,
+            "priority": 3
+          },
+          {
+            "id": "U10",
+            "name": "Laboratorio Regional",
+            "demand": 3,
+            "priority": 2
+          }
+        ]
+      },
+      {
+        "vehicle": "V2",
+        "capacity": 12,
+        "max_distance_km": 30,
+        "load": 11,
+        "distance_km": 28.12,
+        "deliveries": [
+          {
+            "id": "U04",
+            "name": "Paciente Ana",
+            "demand": 2,
+            "priority": 3
+          },
+          {
+            "id": "U01",
+            "name": "UPA Norte",
+            "demand": 4,
+            "priority": 3
+          },
+          {
+            "id": "U02",
+            "name": "Clinica Leste",
+            "demand": 3,
+            "priority": 2
+          },
+          {
+            "id": "U03",
+            "name": "UBS Jardim",
+            "demand": 2,
+            "priority": 1
+          }
+        ]
+      },
+      {
+        "vehicle": "V3",
+        "capacity": 12,
+        "max_distance_km": 30,
+        "load": 10,
+        "distance_km": 24.66,
+        "deliveries": [
+          {
+            "id": "U05",
+            "name": "Paciente Bruno",
+            "demand": 3,
+            "priority": 2
+          },
+          {
+            "id": "U07",
+            "name": "Clinica Oeste",
+            "demand": 3,
+            "priority": 1
+          },
+          {
+            "id": "U06",
+            "name": "UBS Sul",
+            "demand": 4,
+            "priority": 1
+          }
+        ]
+      }
+    ]
+  },
+  "nearest_neighbor_baseline": {
+    "fitness": 434.92,
+    "total_distance_km": 78.92,
+    "feasible": true,
+    "priority_penalty": 89.0,
+    "overload": 0.0,
+    "autonomy_excess_km": 0.0,
+    "total_load": 30,
+    "total_vehicle_capacity": 36,
+    "capacity_utilization_percent": 83.33,
+    "routes": [
+      {
+        "vehicle": "V1",
+        "capacity": 12,
+        "max_distance_km": 30,
+        "load": 12,
+        "distance_km": 24.8,
+        "deliveries": [
+          {
+            "id": "U10",
+            "name": "Laboratorio Regional",
+            "demand": 3,
+            "priority": 2
+          },
+          {
+            "id": "U01",
+            "name": "UPA Norte",
+            "demand": 4,
+            "priority": 3
+          },
+          {
+            "id": "U04",
+            "name": "Paciente Ana",
+            "demand": 2,
+            "priority": 3
+          },
+          {
+            "id": "U05",
+            "name": "Paciente Bruno",
+            "demand": 3,
+            "priority": 2
+          }
+        ]
+      },
+      {
+        "vehicle": "V2",
+        "capacity": 12,
+        "max_distance_km": 30,
+        "load": 9,
+        "distance_km": 27.5,
+        "deliveries": [
+          {
+            "id": "U07",
+            "name": "Clinica Oeste",
+            "demand": 3,
+            "priority": 1
+          },
+          {
+            "id": "U06",
+            "name": "UBS Sul",
+            "demand": 4,
+            "priority": 1
+          },
+          {
+            "id": "U08",
+            "name": "Paciente Carla",
+            "demand": 2,
+            "priority": 3
+          }
+        ]
+      },
+      {
+        "vehicle": "V3",
+        "capacity": 12,
+        "max_distance_km": 30,
+        "load": 9,
+        "distance_km": 26.62,
+        "deliveries": [
+          {
+            "id": "U09",
+            "name": "Pronto Atendimento",
+            "demand": 4,
+            "priority": 3
+          },
+          {
+            "id": "U03",
+            "name": "UBS Jardim",
+            "demand": 2,
+            "priority": 1
+          },
+          {
+            "id": "U02",
+            "name": "Clinica Leste",
+            "demand": 3,
+            "priority": 2
+          }
+        ]
+      }
+    ]
+  }
+}
