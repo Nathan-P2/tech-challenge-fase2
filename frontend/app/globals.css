@@ -88,7 +88,7 @@ input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--acce
 .question-form textarea::placeholder { color: #91a2aa; }
 .question-form textarea:focus { border-color: #e97964; }
 .question-form button { margin-top: 0; background: white; color: var(--ink); }
-.report-box { min-height: 180px; height: 100%; padding: 20px; display: flex; flex-direction: column; overflow: hidden; background: white; color: var(--ink); }
+.report-box { min-height: 180px; height: 550px; padding: 20px; display: flex; flex-direction: column; overflow: hidden; background: white; color: var(--ink); }
 .report-box > b { display: block; padding-bottom: 12px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 9px; text-transform: uppercase; }
 .report-box p { color: var(--muted); }
 .markdown-report { flex: 1; min-height: 0; height: 100%; margin-top: 16px; overflow: auto; padding-right: 8px; font-size: 11px; line-height: 1.6; }
