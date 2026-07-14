@@ -130,9 +130,9 @@ function reportTask(type: ReportType, historySize: number): string {
     ? "Identifique tendências entre as execuções e justifique as melhorias com esses padrões."
     : "Informe que ainda não há histórico suficiente para identificar tendências.";
   if (type === "weekly") {
-    return `Gere um relatório semanal consolidado. Compare as execuções do período, destaque tendências, melhor configuração, problemas recorrentes, economia de tempo, uso de recursos e três melhorias. ${patterns}`;
+    return `Gere um relatório semanal consolidado. Compare as execuções do período, destaque tendências, melhor configuração, problemas recorrentes, economia de tempo, uso de recursos e três melhorias. Não gere tabelas. ${patterns}`;
   }
-  return `Gere um relatório diário de eficiência comparando o plano atual com a referência. Analise distância, capacidade, prioridades, economia de tempo, uso de recursos e apresente três melhorias. ${patterns}`;
+  return `Gere um relatório diário de eficiência comparando o plano atual com a referência. Analise distância, capacidade, prioridades, economia de tempo, uso de recursos e apresente três melhorias. Não gere tabelas. ${patterns}`;
 }
 
 function readReport(data: unknown): string | null {

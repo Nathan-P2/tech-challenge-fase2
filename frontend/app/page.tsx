@@ -408,17 +408,6 @@ export default function Home() {
   const timeSavedMinutes = estimatedCompletionTime(baseline) - completionMinutes;
 
   return <main>
-    <header className="header">
-      <a className="logo" href="#inicio"><span>RG</span> Rota Gen</a>
-      <span>Projeto hospitalar</span>
-    </header>
-
-    <section className="intro" id="inicio">
-      <p>Tech Challenge · Projeto 2</p>
-      <h1>Otimização de rotas hospitalares</h1>
-      <span>Configure o algoritmo, execute a simulação e confira como as entregas foram divididas entre os veículos.</span>
-    </section>
-
     <section className="simulator" aria-label="Simulador de rotas">
       <aside className="settings">
         <div className="card-title"><span>1</span><div><small>Configuração</small><h2>Parâmetros</h2></div></div>
@@ -458,21 +447,9 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="steps">
-      <div className="card-title"><span>3</span><div><small>Resumo didático</small><h2>Como o algoritmo funciona</h2></div></div>
-      <div className="step-list">
-        <article><b>1</b><div><strong>Cria rotas</strong><span>Gera diferentes ordens de entrega.</span></div></article>
-        <article><b>2</b><div><strong>Seleciona</strong><span>Escolhe as rotas com menor custo.</span></div></article>
-        <article><b>3</b><div><strong>Combina e altera</strong><span>Aplica Order crossover e mutação.</span></div></article>
-        <article><b>4</b><div><strong>Avalia</strong><span>Considera distância, prioridade, carga e autonomia.</span></div></article>
-      </div>
-    </section>
-
     <section className="report" id="relatorio">
       <div><small>Relatório operacional</small><h2>Consulte a rota em linguagem natural</h2><p>Gere um relatório ou faça uma pergunta objetiva sobre entregas, prioridades e veículos.</p><div className="history-summary"><span>Histórico local: <strong>{history.length}/30 execuções</strong></span>{history.length > 0 && <button onClick={() => saveHistory([])}>Limpar</button>}</div><label className="report-period" htmlFor="report-period">Período<select id="report-period" value={reportType} onChange={(event) => setReportType(event.target.value as ReportType)}><option value="daily">Diário</option><option value="weekly">Semanal</option></select></label><button onClick={() => requestAnalysis()} disabled={loadingReport}>{loadingReport ? "Processando..." : `Gerar relatório ${reportType === "weekly" ? "semanal" : "diário"}`}</button><div className="question-form"><label htmlFor="route-question">Pergunta sobre a rota</label><textarea id="route-question" maxLength={500} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ex.: Qual padrão aparece nas últimas execuções?" /><button onClick={() => requestAnalysis(question.trim())} disabled={loadingReport || !question.trim()}>Enviar pergunta</button></div></div>
       <div className="report-box"><b>{reportMode || "Resultado"}</b>{report ? <MarkdownReport text={report} /> : <p>O relatório aparecerá aqui após clicar no botão.</p>}</div>
     </section>
-
-    <footer>Rota Gen · Simulação acadêmica com dados fictícios.</footer>
   </main>;
 }
