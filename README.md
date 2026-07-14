@@ -93,7 +93,3 @@ Frontend:
 cd frontend
 npm test
 ```
-
-## Escopo
-
-O projeto é executado localmente e não utiliza nuvem. Infraestrutura como código não se aplica ao escopo escolhido. As coordenadas e distâncias são fictícias e euclidianas. O tempo é uma estimativa baseada em velocidade média de 30 km/h e 8 minutos de atendimento por entrega; não representa trânsito real.
